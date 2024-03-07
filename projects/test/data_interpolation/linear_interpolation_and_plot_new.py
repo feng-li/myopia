@@ -93,16 +93,14 @@ for i in range(len(df_sorted)):
             i_rate_urban = df_sorted[
                 (df_sorted.province.isin(nearest_province))
                 & (df_sorted.age_group == i_age_group) &
-                (df_sorted.year.isin(nearest_year))]['myopia_rate_urban'].mean(
-                )
+                (df_sorted.year.isin(nearest_year))]['myopia_rate_urban'].mean()
             df_sorted.loc[i, ['myopia_rate_urban']] = i_rate_urban
 
         if any(i_rate[['myopia_rate_rural']].isna()):
             i_rate_rural = df_sorted[
                 (df_sorted.province.isin(nearest_province))
                 & (df_sorted.age_group == i_age_group) &
-                (df_sorted.year.isin(nearest_year))]['myopia_rate_rural'].mean(
-                )
+                (df_sorted.year.isin(nearest_year))]['myopia_rate_rural'].mean()
             df_sorted.loc[i, ['myopia_rate_rural']] = i_rate_rural
 
 df_sorted.to_csv('data_interpolated_by_nearest_year_and province.csv', index=False)
@@ -134,6 +132,7 @@ def interpolate_linear(df):
 w = pd.read_csv("weight.csv")
 w = w.set_index('province')
 w
+
 
 def weight_matching(df):
     '''权重匹配'''

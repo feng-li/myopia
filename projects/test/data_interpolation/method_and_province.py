@@ -5,6 +5,9 @@ import os
 import pandas as pd
 import numpy as np
 
+pd.options.display.max_rows=1000
+pd.options.display.max_columns=1000
+
 # ## Load the original file
 os.chdir(
     os.path.expanduser('~/projects/myopia/projects/test/data_interpolation'))
@@ -65,6 +68,50 @@ df = df0.iloc[:, [
     67, 68, 69, 70, 71, 72, 73, 74
 ]]
 
+
+# Remove suspicious inputed data for certain age group and province
+# Initial removel by expert screening. TODO: using anomaly detection algorithm to filter.
+df.loc[(df['英文省份'] == "Xinjiang") &
+       (df['年份'] == 2019) &
+       (df['7-9年级农村近视率'] == '30.78%' ),
+       '7-9年级农村近视率'] = np.nan
+
+df.loc[(df['英文省份'] == "Hainan") &
+       (df['年份'] == 2019) &
+       (df['7-9年级农村近视率'] == '28.54%' ),
+       '7-9年级农村近视率'] = np.nan
+
+df.loc[(df['英文省份'] == "Tibet") &
+       (df['年份'] == 2019) &
+       (df['7-9年级农村近视率'] == '38.82%' ),
+       '7-9年级农村近视率'] = np.nan
+
+df.loc[(df['英文省份'] == "Yunnan") &
+       (df['年份'] == 2016) &
+       (df['7-9年级农村近视率'] == '32.54%' ),
+       '7-9年级农村近视率'] = np.nan
+
+df.loc[(df['英文省份'] == "Sichuan") &
+       (df['年份'] == 2016) &
+       (df['7-9年级农村近视率'] == '32.54%' ),
+       '7-9年级农村近视率'] = np.nan
+df.loc[(df['英文省份'] == "Yunnan") &
+       (df['年份'] == 2016) &
+       (df['7-9年级农村近视率'] == '32.54%' ),
+       '7-9年级农村近视率'] = np.nan
+
+df.loc[(df['英文省份'] == "Sichuan") &
+       (df['年份'] == 2022) &
+       (df['10-12年级农村近视率'] == '97.12%' ),
+       '10-12年级农村近视率'] = np.nan
+
+
+df.loc[(df['英文省份'] == "Sichuan") &
+       (df['年份'] == 2022) &
+       (df['1-3年级农村患病率'] == '61.10%' ),
+       '1-3年级农村患病率'] = np.nan
+
+
 df.to_csv('filtered_data.csv', index=False)
 data = pd.read_csv('filtered_data.csv')
 
@@ -74,12 +121,10 @@ empty['method_1'] = np.nan
 # Mark all "\" and "0" as nan
 data = data.replace('\\', np.nan)
 data = data.replace(str(0), np.nan)
-
 data
 
 
 # Prefer using method 2 ("散瞳")
-
 data_2 = data[(data['验光方式1非散瞳；2散瞳；3试片'] == 2)]
 grouped_data = data_2.groupby(['英文省份', '年份'])
 for group_name, group_data in grouped_data:
@@ -120,7 +165,8 @@ for group_name, group_data in grouped_data:
     for j in range(5, 28, 3):
         group_data_0 = group_data.iloc[:, j].fillna('NaN')
         group_data_1 = group_data_0.str.rstrip('%').astype(float) / 100
-        mean = group_data_1.mean()
+        print(group_data_1)
+        mean = group_data_1.median()
         value.append(mean)
 
     for i in range(1, 5):
@@ -146,7 +192,7 @@ empty
 empty_sorted = empty.sort_values(by=['province', 'year', 'age_group'])
 # empty_sorted = empty_sorted.loc[empty_sorted.year != 2020, :]
 
-# Remove suspicious inputed data for certain age group and province
+
 # empty_sorted.loc[(empty_sorted['year'] == 2006) &
 #                  (empty_sorted['province'] == 'Chongqing') &
 #                  (empty_sorted['age_group'] == 3),
