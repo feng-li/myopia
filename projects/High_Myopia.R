@@ -58,6 +58,8 @@ points(year, upper, type="l", col = "red")
 points(year, lower, type="l", col = "red")
 
 ## Group 10-12
+## We first use a year based smoothing to estimate the mean time-varying rate. Then an auto.arima model is used to produce 50 year forecasting. ARIMA model is a stationary model. The trend estimated in the spline is added to the forecast.
+
 data_10_12 = high_myopia[, "rate_10_12_urban"]
 year = high_myopia[,'年份']
 
@@ -73,8 +75,12 @@ x = cbind(year, year^2)
 reg12 = Tps(x, data_logit, lambda = 0.5)
 fitted_ = fitted(reg12)[,1]
 
+# Estimating the linear trend
+trend = lm(fitted_~year)$coef[2] * 0.5
+
+
 fitted_orig12 = 1 / (1 + exp(-fitted_))
-mean = fitted_orig12
+mean12 = fitted_orig12
 
 resid12 = residuals(reg12)
 sd12 = sd(data - fitted_orig12)
@@ -93,6 +99,41 @@ points(year, fitted_orig12, type="l", col = "blue")
 points(year, upper, type="l", col = "red")
 points(year, lower, type="l", col = "red")
 
-out = data.frame(year, mean, lower, upper)
+library("forecast")
+
+resid = data_logit - fitted_
+
+arima12 = auto.arima(data_logit)
+
+fore = forecast(arima12, 28)
+fore_mean = fore$mean  + (1:28)* trend
+
+fore12_ = 1 / (1 + exp(-fore$mean))
+
+se_logit = (fore$upper[, 2] - fore$mean) / 1.96
+
+se12 = fore12_ * (1 - fore12_) * se_logit
+upper12  = fore12_ + 1.96 * se12
+
+## lower = mean12 - 1.96 * se12
+## the lower bound is below zero, using transformed version.
+lower12 = 1/(1+exp(-fore$lower))[, 2]
+# autoplot(fore)
+
+fore12 = 1 / (1 + exp(-fore_mean))
+
+out = data.frame(year = c(year, 2023:2050),
+                 mean = c(mean12, fore12),
+                 lower = c(lower, lower12),
+                 upper = c(upper, upper12)
+                 )
 out = out %>% distinct()
+
+
+plot(out$year, out$upper, type="l", col = "red", ylim = c(0, 1), xlab = "Year", ylab = "High Myopia")
+points(out$year, out$lower, type="l", col = "red")
+points(out$year, out$mean, type="l", col = "blue")
+points(year, data)
+
+
 write.table(out, file = "~/high_myopia_est.csv", row.names = FALSE, sep = ",")
