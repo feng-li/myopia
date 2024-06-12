@@ -3,7 +3,7 @@ library("fields")
 ## RATE COUNTRY
 rm(list = ls())
 
-file = "test/data_interpolation/summary sheet/rate_country.csv"
+file = "rates/rate_country.csv"
 data_ts = read.csv(file, header = TRUE)
 
 year = data_ts[,'year']
@@ -15,7 +15,7 @@ fitted = fitted(reg1)[,1]
 resid1 = residuals(reg1)
 upper = fitted + 1.96 * sd(resid1)
 lower = fitted - 1.96 * sd(resid1)
-
+reg_sd = sd(resid1)
 
 plot(year, rate)
 points(year, fitted, type="l", col = "blue")
@@ -23,13 +23,51 @@ points(year, upper, type="l", col = "red")
 points(year, lower, type="l", col = "red")
 
 out = data.frame(cbind(year, rate, fitted, upper, lower))
-write.csv(out, file = "test/data_interpolation/summary sheet/rate_country_with_95CI.csv")
+write.csv(out, file = "rate_country_with_95CI.csv")
+
+## Forecast
+library("forecast")
+
+year_forec = 2023:2050
+
+mean_g = fitted[length(fitted)]
+mean1 = fitted
+
+sd_inflation_factor = 0.015
+
+
+for (h in 0:27){
+
+    arima1 = auto.arima(resid1)
+    fore1 = forecast(arima1, h = 1)
+    resid1 = rbind(resid1, fore1$mean)
+    mean1 = c(mean1, fore1$mean + mean_g)
+
+    fore_mean = (mean_g + fore1$mean)
+    lower_new = (fore_mean - 1.96 * ((fore1$mean - fore1$lower[2]) / 1.96 + reg_sd) *
+                 (1 + sd_inflation_factor * h))
+    upper_new = (fore_mean + 1.96 * ((fore1$upper[2] - fore1$mean) / 1.96 + reg_sd) *
+                 (1 + sd_inflation_factor * h))
+
+    upper = c(upper, upper_new)
+    lower = c(lower, lower_new)
+}
+
+year1 = 1998:2050
+plot(year1, upper, type="l", col = "red")
+points(year1, lower, type="l", col = "red")
+points(year1, mean1, type="l", col = "blue")
+# plot(year, rate)
+
+out1 = data.frame(cbind(year1, mean1, upper, lower))
+write.csv(out1, file = "rate_country_forec_with_95CI.csv")
+
 
 
 ## RATE COUNTRY URBAN and RURAL
 rm(list = ls())
 
-file = "test/data_interpolation/summary sheet/rate_country_urban_and_rural.csv"
+file = "rates/rate_country_urban_and_rural.csv"
 data_ts = read.csv(file, header = TRUE)
 
 year = data_ts[,'year']
@@ -73,7 +111,7 @@ write.csv(out, file = "test/data_interpolation/summary sheet/rate_country_urban_
 ## RATE HDI
 rm(list = ls())
 
-file = "test/data_interpolation/summary sheet/rate_hdi.csv"
+file = "rates/rate_hdi.csv"
 data_ts = read.csv(file, header = TRUE)
 
 ##-- High HDI
@@ -133,4 +171,4 @@ points(year, upper_ml, type="l", col = "red")
 points(year, lower_ml, type="l", col = "red")
 
 out = data.frame(cbind(year, rate_vh, fitted_vh, upper_vh, lower_vh, rate_h, fitted_h, upper_h, lower_h, rate_ml, fitted_ml, upper_ml, lower_ml))
-write.csv(out, file = "test/data_interpolation/summary sheet/rate_hdi_with_95CI.csv")
+write.csv(out, file = "rate_hdi_with_95CI.csv")
