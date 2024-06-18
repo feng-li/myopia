@@ -1,5 +1,5 @@
 rm(list = ls())
-data_ts = read.csv("test/data_interpolation/summary sheet/rate_country_age_urban_and_rural.csv",
+data_ts = read.csv("rates/rate_country_age_urban_rural_all.csv",
                    header = TRUE)
 
 ## select year range
@@ -7,21 +7,31 @@ year = data_ts[data_ts$age_group==1,'year']
 
 data_urban = c()
 data_rural = c()
+data_overall = c()
+
 for (g in 1:4){
     data_urban = cbind(data_urban, data_ts[data_ts$age_group==g,'myopia_rate_urban'])
     data_rural = cbind(data_rural, data_ts[data_ts$age_group==g,'myopia_rate_rural'])
+    data_overall = cbind(data_overall, data_ts[data_ts$age_group==g,'myopia_rate'])
 }
 
 
-year_forec = 2020:2050
+year_forec = 2023:2050
 
-## Moelling urban data
-# Urban forecasting
-data = data_urban
-lambda = 0.1
+## Modeling urban data
 
+## Urban forecasting
+# data = data_urban
+# lambda = 0.1
+
+## Rural forecasting
 ## data = data_rural
 ## lambda = 0.05
+
+## Overall forecasting
+data = data_overall
+lambda = 0.1
+
 
 rolling_window = 1
 horizon = round(length(year_forec) / rolling_window)
@@ -114,8 +124,17 @@ reg_sd0 = apply(reg_resid[1:nrow(data_urban),],2,sd)
 reg_sd = reg_sd0 / 4 # Delta methods
 
 forc_array_new = forc_array
+fitted_mat = NULL
 for(g in 1:4){
 
+    ## Fitted mean and CI
+    f_mean = fitted_orig[1:nrow(data_urban), g]
+    f_upper = f_mean + 1.96 * reg_sd[g]
+    f_lower = f_mean - 1.96 * reg_sd[g]
+
+    fitted_mat = cbind(fitted_mat, f_lower, f_mean, f_upper)
+
+    ## Forecast mean and CI
     mean_g = forc_array[ ,2, g]
     lower_g = forc_array[ ,1, g]
     upper_g = forc_array[, 3, g]
@@ -131,17 +150,21 @@ for(g in 1:4){
 }
 
 
-
-
 forc_mat = matrix(forc_array_new, dim(forc_array_new)[1],
                   dim(forc_array_new)[2]*dim(forc_array_new)[3])
 
-write.table(forc_mat, file = "test/data_interpolation/summary sheet/forc_urban_with_interval_4groups.csv", sep = ",")
+
+year_all = 1998:2050
+out_mat = rbind(fitted_mat, forc_mat)
+out_mat = cbind(year_all, out_mat)
+
+## write.table(out_mat, file = "test/data_interpolation/summary sheet/forc_urban_with_interval_4groups.csv", sep = ",")
 ## write.table(forc_mat, file = "test/data_interpolation/summary sheet/forc_rurual_with_interval_4groups.csv", sep = ",")
+write.table(out_mat, file = "forc_overall_with_interval_4groups.csv", sep = ",", row.names = FALSE)
 
 par(mfrow = c(2, 2))
 for(g in 1:4){
-    plot(year_forec, forc_array_new[,1, g],type="l",ylim=c(0,1), col = "blue")
-    lines(year_forec, forc_array_new[,2, g],type="l",ylim=c(0,1), col = "red")
-    lines(year_forec, forc_array_new[,3, g],type="l",ylim=c(0,1), col = "blue")
+    plot(year_all, out_mat[,1 + (g - 1) * 3 + 1],type="l",ylim=c(0,1), col = "blue")
+    lines(year_all, out_mat[,2 + (g - 1) * 3 + 1],type="l",ylim=c(0,1), col = "red")
+    lines(year_all, out_mat[,3 + (g - 1) * 3 + 1],type="l",ylim=c(0,1), col = "blue")
 }
