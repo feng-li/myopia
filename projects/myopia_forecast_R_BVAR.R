@@ -19,18 +19,17 @@ for (g in 1:4){
 year_forec = 2023:2050
 
 ## Modeling urban data
-
 ## Urban forecasting
-# data = data_urban
-# lambda = 0.1
+data = data_urban
+lambda = 0.1
 
 ## Rural forecasting
 ## data = data_rural
 ## lambda = 0.05
 
 ## Overall forecasting
-data = data_overall
-lambda = 0.1
+# data = data_overall
+# lambda = 0.1
 
 
 rolling_window = 1
@@ -160,7 +159,8 @@ out_mat = cbind(year_all, out_mat)
 
 ## write.table(out_mat, file = "test/data_interpolation/summary sheet/forc_urban_with_interval_4groups.csv", sep = ",")
 ## write.table(forc_mat, file = "test/data_interpolation/summary sheet/forc_rurual_with_interval_4groups.csv", sep = ",")
-write.table(out_mat, file = "forc_overall_with_interval_4groups.csv", sep = ",", row.names = FALSE)
+write.table(out_mat, file = "forc_urban_with_interval_4groups.csv", sep = ",", row.names = FALSE)
+## write.table(out_mat, file = "forc_overall_with_interval_4groups.csv", sep = ",", row.names = FALSE)
 
 par(mfrow = c(2, 2))
 for(g in 1:4){
