@@ -22,14 +22,17 @@ year_forec = 2023:2050
 ## Urban forecasting
 data = data_urban
 lambda = 0.1
+sd_inflation_factor = 0.02 # Urban, Overall
 
 ## Rural forecasting
 ## data = data_rural
 ## lambda = 0.05
+## sd_inflation_factor = 0.03 # Rural
 
 ## Overall forecasting
 # data = data_overall
 # lambda = 0.1
+# sd_inflation_factor = 0.02 # Urban, Overall
 
 
 rolling_window = 1
@@ -139,7 +142,6 @@ for(g in 1:4){
     upper_g = forc_array[, 3, g]
     reg_sd_g = reg_sd[g]
 
-    sd_inflation_factor = 0.02
 
     lower_g_new = mean_g - 1.96 * ((mean_g - lower_g) / 1.96 + reg_sd_g) * (1 + sd_inflation_factor * seq(1, length(year_forec)))
     upper_g_new = mean_g + 1.96 * ((upper_g - mean_g) / 1.96 + reg_sd_g)* (1 + sd_inflation_factor * seq(1, length(year_forec)))
@@ -157,9 +159,8 @@ year_all = 1998:2050
 out_mat = rbind(fitted_mat, forc_mat)
 out_mat = cbind(year_all, out_mat)
 
-## write.table(out_mat, file = "test/data_interpolation/summary sheet/forc_urban_with_interval_4groups.csv", sep = ",")
-## write.table(forc_mat, file = "test/data_interpolation/summary sheet/forc_rurual_with_interval_4groups.csv", sep = ",")
 write.table(out_mat, file = "forc_urban_with_interval_4groups.csv", sep = ",", row.names = FALSE)
+# write.table(out_mat, file = "forc_rural_with_interval_4groups.csv", sep = ",", row.names = FALSE)
 ## write.table(out_mat, file = "forc_overall_with_interval_4groups.csv", sep = ",", row.names = FALSE)
 
 par(mfrow = c(2, 2))
