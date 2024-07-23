@@ -165,6 +165,9 @@ dev.copy2pdf(file = "cycloplegia_forecast_rural_4groups.pdf")
 rm(list = ls())
 myopia = read.csv("data_processing/filtered_data_nocycloplegia.csv", header = TRUE)
 
+error_confidence_prior
+
+
 par(mfrow = c(2, 2))
 lambda = c(0.1, 0.1, 0.5, 0.05)
 error_confidence_prior = c(0.64, 0.36, 0.4, 0.36)
@@ -305,6 +308,8 @@ for (col in c(7, 13, 19, 25)) # for groups
               length.out = length(mean1))
     upper = c(upper, mean1 + 1.96 * sd1)
     lower = c(lower, mean1 - 1.96 * sd1)
+
+
 
     if(any(lower <= 0)){
     delta = 0.01
