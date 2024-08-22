@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#! /usr/bin/env python
 # coding: utf-8
 
 import pandas as pd
@@ -6,10 +6,12 @@ import numpy as np
 import os
 
 os.chdir(
-    os.path.expanduser('~/projects/myopia/projects/test/data_interpolation'))
+    os.path.expanduser('~/code/myopia/projects/data_interpolation'))
 
-data = pd.read_csv("filled_with_basic_methods.csv")  # Basic interpolation with methods and nearst
+data = pd.read_csv("data_processing/filled_with_basic_methods_and_neighbors.csv")  # Basic interpolation with methods and nearest neighbors
+
 # data = pd.read_csv("filled_with_sunlight_intensity.csv")  # Basic interpolation with methods and nearst
+
 data = data[[
     'province', 'year', 'age_group', 'method', 'myopia_rate_urban',
     'myopia_rate_rural'
