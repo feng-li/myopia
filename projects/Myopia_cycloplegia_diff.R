@@ -374,11 +374,13 @@ for(name in c("cycloplegia_urban", "nocycloplegia_urban")){
 
         if(g == 1 & d == 1){
             plot(year, myopia, xlim = c(1998, 2023), ylim = c(0, 1),
-                 type = "l", col = g, lty = lty[d], lwd = 2)
+                 type = "l", col = g, lty = lty[d], lwd = 4,
+                 main = "cycloplegia (solid)  and nocycloplegia (dashed) difference for 4 groups",
+                 ylab = "Myopia (Urban)")
         } else
         {
             points(year, myopia, xlim = c(1998, 2023), ylim = c(0, 1),
-                   type = "l", col = g, lty = lty[d], lwd = 2)
+                   type = "l", col = g, lty = lty[d], lwd = 4)
         }
     }
 }
@@ -399,17 +401,19 @@ for(name in c("cycloplegia_rural", "nocycloplegia_rural")){
 
         if(g == 1 & d == 1){
             plot(year, myopia, xlim = c(1998, 2023), ylim = c(0, 1),
-                 type = "l", col = g, lty = lty[d], lwd = 2)
+                 type = "l", col = g, lty = lty[d], lwd = 4,
+                 main = "cycloplegia (solid)  and nocycloplegia (dashed) difference for 4 groups",
+                 ylab = "Myopia (Urban)")
         } else
         {
             points(year, myopia, xlim = c(1998, 2023), ylim = c(0, 1),
-                   type = "l", col = g, lty = lty[d], lwd = 2)
+                   type = "l", col = g, lty = lty[d], lwd = 4)
         }
     }
 }
 
 
-## Estimate the mean difference over time
+## Estimate the urban mean difference over time
 diff_group = data.frame(year = 1998:2023)
 for(g in 1:4){
     data_cy = cycloplegia_urban[[g]]
@@ -433,7 +437,7 @@ colnames(diff_group) = c("year", "g1", "g2", "g3", "g4")
 write.table(diff_group, file = "meandiff_cycloplegia_urban_4groups.csv", row.names = FALSE, sep = ",")
 
 
-## Estimate the mean difference over time
+## Estimate the rural  mean difference over time
 diff_group = data.frame(year = 1998:2023)
 for(g in 1:4){
     data_cy = cycloplegia_rural[[g]]
