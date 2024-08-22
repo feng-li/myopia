@@ -76,6 +76,7 @@ for (col in c(4, 10, 16, 22)) # for groups
     points(year_all, upper, col = "red", type = "l")
 
     out = data.frame(cbind(year_all, mean, lower, upper))
+    out_cycloplegia_urban = out
     write.table(out, file = paste0("cycloplegia_forecast_urban_group",
                                    g, ".csv"), row.names = FALSE, sep = ",")
 }
@@ -156,6 +157,7 @@ for (col in c(7, 13, 19, 25)) # for groups
     points(year_all, upper, col = "red", type = "l")
 
     out = data.frame(cbind(year_all, mean, lower, upper))
+    out_cycloplegia_rural = out
     write.table(out, file = paste0("cycloplegia_forecast_rural_group",
                                    g, ".csv"), row.names = FALSE, sep = ",")
 }
@@ -242,6 +244,7 @@ for (col in c(4, 10, 16, 22)) # for groups
     points(year_all, upper, col = "red", type = "l")
 
     out = data.frame(cbind(year_all, mean, lower, upper))
+    out_nocycloplegia_urban = out
     write.table(out, file = paste0("nocycloplegia_forecast_urban_group",
                                    g, ".csv"), row.names = FALSE, sep = ",")
 }
@@ -329,7 +332,126 @@ for (col in c(7, 13, 19, 25)) # for groups
     points(year_all, upper, col = "red", type = "l")
 
     out = data.frame(cbind(year_all, mean, lower, upper))
+    out_nocycloplegia_rural = out
     write.table(out, file = paste0("nocycloplegia_forecast_rural_group",
                                    g, ".csv"), row.names = FALSE, sep = ",")
 }
 dev.copy2pdf(file = "nocycloplegia_forecast_rural_4groups.pdf")
+
+######################################################################
+## Calculate difference between cycloplegia and noncycloplegia effects.
+
+
+## Load the filtered data
+cycloplegia_urban = list()
+cycloplegia_rural = list()
+nocycloplegia_urban = list()
+nocycloplegia_rural = list()
+
+for(g in 1:4){
+    cycloplegia_urban[[g]] = read.csv(paste0("cycloplegia_forecast_urban_group", g, ".csv"), header = TRUE)
+    cycloplegia_rural[[g]] = read.csv(paste0("cycloplegia_forecast_rural_group", g, ".csv"), header = TRUE)
+    nocycloplegia_urban[[g]] = read.csv(paste0("nocycloplegia_forecast_urban_group", g, ".csv"), header = TRUE)
+    nocycloplegia_rural[[g]] = read.csv(paste0("nocycloplegia_forecast_rural_group", g, ".csv"), header = TRUE)
+}
+
+
+## Plot
+## Urban difference
+
+par(mfrow = c(1, 2))
+lty = c("solid", "dotted")
+d = 0
+for(name in c("cycloplegia_urban", "nocycloplegia_urban")){
+    d = d + 1
+    for(g in 1:4){
+        data = get(name)[[g]]
+        idx = 1:(nrow(data)-27)
+        smg = data[idx, ] # only select data before 2023
+
+        year = smg[, 'year_all']
+        myopia = smg[, 'mean']
+
+        if(g == 1 & d == 1){
+            plot(year, myopia, xlim = c(1998, 2023), ylim = c(0, 1),
+                 type = "l", col = g, lty = lty[d], lwd = 2)
+        } else
+        {
+            points(year, myopia, xlim = c(1998, 2023), ylim = c(0, 1),
+                   type = "l", col = g, lty = lty[d], lwd = 2)
+        }
+    }
+}
+
+
+## Rural difference
+lty = c("solid", "dotted")
+d = 0
+for(name in c("cycloplegia_rural", "nocycloplegia_rural")){
+    d = d + 1
+    for(g in 1:4){
+        data = get(name)[[g]]
+        idx = 1:(nrow(data)-27)
+        smg = data[idx, ] # only select data before 2023
+
+        year = smg[, 'year_all']
+        myopia = smg[, 'mean']
+
+        if(g == 1 & d == 1){
+            plot(year, myopia, xlim = c(1998, 2023), ylim = c(0, 1),
+                 type = "l", col = g, lty = lty[d], lwd = 2)
+        } else
+        {
+            points(year, myopia, xlim = c(1998, 2023), ylim = c(0, 1),
+                   type = "l", col = g, lty = lty[d], lwd = 2)
+        }
+    }
+}
+
+
+## Estimate the mean difference over time
+diff_group = data.frame(year = 1998:2023)
+for(g in 1:4){
+    data_cy = cycloplegia_urban[[g]]
+    data_nocy = nocycloplegia_urban[[g]]
+
+    df = full_join(data_cy,data_nocy,by = "year_all")
+
+    df[, "meandiff"] = df$mean.x - df$mean.y
+
+    diff = arrange(df, year_all) %>% na.omit
+
+    idx = 1:(nrow(diff)-27)
+    smg = diff[idx, ] # only select data before 2023
+
+    lmdata = data.frame(x = cbind(smg$year_all),
+                        data = smg$meandiff)
+    reg = lm(data ~ x, data = lmdata)
+    diff_group[, g + 1] = predict(reg, newdata = data.frame(x = 1998:2023))
+}
+colnames(diff_group) = c("year", "g1", "g2", "g3", "g4")
+write.table(diff_group, file = "meandiff_cycloplegia_urban_4groups.csv", row.names = FALSE, sep = ",")
+
+
+## Estimate the mean difference over time
+diff_group = data.frame(year = 1998:2023)
+for(g in 1:4){
+    data_cy = cycloplegia_rural[[g]]
+    data_nocy = nocycloplegia_rural[[g]]
+
+    df = full_join(data_cy,data_nocy,by = "year_all")
+
+    df[, "meandiff"] = df$mean.x - df$mean.y
+
+    diff = arrange(df, year_all) %>% na.omit
+
+    idx = 1:(nrow(diff)-27)
+    smg = diff[idx, ] # only select data before 2023
+
+    lmdata = data.frame(x = cbind(smg$year_all),
+                        data = smg$meandiff)
+    reg = lm(data ~ x, data = lmdata)
+    diff_group[, g + 1] = predict(reg, newdata = data.frame(x = 1998:2023))
+}
+colnames(diff_group) = c("year", "g1", "g2", "g3", "g4")
+write.table(diff_group, file = "meandiff_cycloplegia_rural_4groups.csv", row.names = FALSE, sep = ",")
