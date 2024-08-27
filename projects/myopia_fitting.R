@@ -105,7 +105,7 @@ points(year, upper_rural, type="l", col = "red")
 points(year, lower_rural, type="l", col = "red")
 
 out = data.frame(cbind(year, rate_urban, fitted_urban, upper_urban, lower_urban, rate_rural, fitted_rural, upper_rural, lower_rural))
-write.csv(out, file = "test/data_interpolation/summary sheet/rate_country_urban_and_rural_with_95CI.csv")
+write.csv(out, file = "rate_country_urban_and_rural_with_95CI.csv")
 
 
 ## RATE HDI
@@ -115,20 +115,7 @@ file = "rates/rate_hdi.csv"
 data_ts = read.csv(file, header = TRUE)
 
 ##-- High HDI
-rate_vh = data_ts[data_ts$HDI_state == "very high", c("year", "rate")]
-year = rate_vh[,'year']
-rate_vh = rate_vh[, 'rate']
-
-x = cbind(year)
-reg1 = Tps(x, rate_vh, lambda = 0.01)
-fitted_vh = fitted(reg1)[,1]
-
-resid1 = residuals(reg1)
-upper_vh = fitted_vh + 1.96 * sd(resid1)
-lower_vh = fitted_vh - 1.96 * sd(resid1)
-
-
-rate_h = data_ts[data_ts$HDI_state == "high", c("year", "rate")]
+rate_h = data_ts[data_ts$hdistate == "high", c("year", "rate")]
 year = rate_h[,'year']
 rate_h = rate_h[, 'rate']
 
@@ -140,35 +127,49 @@ resid1 = residuals(reg1)
 upper_h = fitted_h + 1.96 * sd(resid1)
 lower_h = fitted_h - 1.96 * sd(resid1)
 
-
-rate_ml = data_ts[data_ts$HDI_state == "low and medium", c("year", "rate")]
-year = rate_ml[,'year']
-rate_ml = rate_ml[, 'rate']
+## Medium
+rate_m = data_ts[data_ts$hdistate == "medium", c("year", "rate")]
+year = rate_m[,'year']
+rate_m = rate_m[, 'rate']
 
 x = cbind(year)
-reg1 = Tps(x, rate_ml, lambda = 0.01)
-fitted_ml = fitted(reg1)[,1]
+reg1 = Tps(x, rate_m, lambda = 0.01)
+fitted_m = fitted(reg1)[,1]
 
 resid1 = residuals(reg1)
-upper_ml = fitted_ml + 1.96 * sd(resid1)
-lower_ml = fitted_ml - 1.96 * sd(resid1)
+upper_m = fitted_m + 1.96 * sd(resid1)
+lower_m = fitted_m - 1.96 * sd(resid1)
+
+
+# rate_l = data_ts[data_ts$hdistate == "low and medium", c("year", "rate")]
+rate_l = data_ts[data_ts$hdistate == "low", c("year", "rate")]
+year = rate_l[,'year']
+rate_l = rate_l[, 'rate']
+
+x = cbind(year)
+reg1 = Tps(x, rate_l, lambda = 0.01)
+fitted_l = fitted(reg1)[,1]
+
+resid1 = residuals(reg1)
+upper_l = fitted_l + 1.96 * sd(resid1)
+lower_l = fitted_l - 1.96 * sd(resid1)
 
 
 par(mfrow = c(3, 1))
-plot(year, rate_vh, ylim = c(0, 1))
-points(year, fitted_vh, type="l", col = "blue")
-points(year, upper_vh, type="l", col = "red")
-points(year, lower_vh, type="l", col = "red")
-
 plot(year, rate_h, ylim = c(0, 1))
 points(year, fitted_h, type="l", col = "blue")
 points(year, upper_h, type="l", col = "red")
 points(year, lower_h, type="l", col = "red")
 
-plot(year, rate_ml, ylim = c(0, 1))
-points(year, fitted_ml, type="l", col = "blue")
-points(year, upper_ml, type="l", col = "red")
-points(year, lower_ml, type="l", col = "red")
+plot(year, rate_m, ylim = c(0, 1))
+points(year, fitted_m, type="l", col = "blue")
+points(year, upper_m, type="l", col = "red")
+points(year, lower_m, type="l", col = "red")
 
-out = data.frame(cbind(year, rate_vh, fitted_vh, upper_vh, lower_vh, rate_h, fitted_h, upper_h, lower_h, rate_ml, fitted_ml, upper_ml, lower_ml))
+plot(year, rate_l, ylim = c(0, 1))
+points(year, fitted_l, type="l", col = "blue")
+points(year, upper_l, type="l", col = "red")
+points(year, lower_l, type="l", col = "red")
+
+out = data.frame(cbind(year, rate_h, fitted_h, upper_h, lower_h, rate_m, fitted_m, upper_m, lower_m, rate_l, fitted_l, upper_l, lower_l))
 write.csv(out, file = "rate_hdi_with_95CI.csv")

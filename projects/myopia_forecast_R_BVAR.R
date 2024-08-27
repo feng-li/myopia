@@ -18,22 +18,29 @@ for (g in 1:4){
 
 year_forec = 2023:2050
 
+######################################################################
+## Change here to switch among urban, rural, overall
+
 ## Modeling urban data
 ## Urban forecasting
-data = data_urban
-lambda = 0.1
-sd_inflation_factor = 0.02 # Urban, Overall
+## data = data_urban
+## lambda = 0.1
+## sd_inflation_factor = 0.02 # Urban, Overall
+## outfile = "forc_urban_with_interval_4groups.csv"
 
 ## Rural forecasting
 ## data = data_rural
 ## lambda = 0.05
 ## sd_inflation_factor = 0.03 # Rural
+## outfile = "forc_rural_with_interval_4groups.csv"
 
 ## Overall forecasting
-# data = data_overall
-# lambda = 0.1
-# sd_inflation_factor = 0.02 # Urban, Overall
+data = data_overall
+lambda = 0.1
+sd_inflation_factor = 0.02 # Urban, Overall
+outfile = "forc_overall_with_interval_4groups.csv"
 
+######################################################################
 
 rolling_window = 1
 horizon = round(length(year_forec) / rolling_window)
@@ -159,9 +166,7 @@ year_all = 1998:2050
 out_mat = rbind(fitted_mat, forc_mat)
 out_mat = cbind(year_all, out_mat)
 
-write.table(out_mat, file = "forc_urban_with_interval_4groups.csv", sep = ",", row.names = FALSE)
-# write.table(out_mat, file = "forc_rural_with_interval_4groups.csv", sep = ",", row.names = FALSE)
-## write.table(out_mat, file = "forc_overall_with_interval_4groups.csv", sep = ",", row.names = FALSE)
+write.table(out_mat, file = outfile, sep = ",", row.names = FALSE)
 
 par(mfrow = c(2, 2))
 for(g in 1:4){
