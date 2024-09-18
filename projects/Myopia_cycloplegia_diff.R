@@ -1,4 +1,4 @@
-library(dplyr)
+library("dplyr")
 library("fields")
 library("forecast")
 
@@ -14,7 +14,7 @@ for (col in c(4, 10, 16, 22)) # for groups
     g1 = myopia[c(2, col, col + 2)]
     names(g1) = c("year", "size", "rate")
     g1 = g1[complete.cases(g1), ] # remove NA
-    g1 = sort_by(g1, g1[[1]]) # sort
+    g1 = g1 %>% arrange(year) # sort
     # Weighted mean by group
     wg1 <- g1 %>% group_by(year) %>% summarise(rate = sum(rate * size) / sum(size)) %>% as.data.frame
     print(wg1)
@@ -95,7 +95,7 @@ for (col in c(7, 13, 19, 25)) # for groups
     g1 = myopia[c(2, col, col + 2)]
     names(g1) = c("year", "size", "rate")
     g1 = g1[complete.cases(g1), ] # remove NA
-    g1 = sort_by(g1, g1[[1]]) # sort
+    g1 = g1 %>% arrange(year) # sort
     # Weighted mean by group
     wg1 <- g1 %>% group_by(year) %>% summarise(rate = sum(rate * size) / sum(size)) %>% as.data.frame
     print(wg1)
@@ -167,8 +167,6 @@ dev.copy2pdf(file = "cycloplegia_forecast_rural_4groups.pdf")
 rm(list = ls())
 myopia = read.csv("data_processing/filtered_data_nocycloplegia.csv", header = TRUE)
 
-error_confidence_prior
-
 
 par(mfrow = c(2, 2))
 lambda = c(0.1, 0.1, 0.5, 0.05)
@@ -182,7 +180,7 @@ for (col in c(4, 10, 16, 22)) # for groups
     g1 = myopia[c(2, col, col + 2)]
     names(g1) = c("year", "size", "rate")
     g1 = g1[complete.cases(g1), ] # remove NA
-    g1 = sort_by(g1, g1[[1]]) # sort
+    g1 = g1 %>% arrange(year) # sort
     # Weighted mean by group
     wg1 <- g1 %>% group_by(year) %>% summarise(rate = sum(rate * size) / sum(size)) %>% as.data.frame
     print(wg1)
@@ -267,7 +265,7 @@ for (col in c(7, 13, 19, 25)) # for groups
     g1 = myopia[c(2, col, col + 2)]
     names(g1) = c("year", "size", "rate")
     g1 = g1[complete.cases(g1), ] # remove NA
-    g1 = sort_by(g1, g1[[1]]) # sort
+    g1 = g1 %>% arrange(year) # sort
     # Weighted mean by group
     wg1 <- g1 %>% group_by(year) %>% summarise(rate = sum(rate * size) / sum(size)) %>% as.data.frame
     print(wg1)
@@ -341,6 +339,31 @@ dev.copy2pdf(file = "nocycloplegia_forecast_rural_4groups.pdf")
 ######################################################################
 ## Calculate difference between cycloplegia and noncycloplegia effects.
 
+## Load the filtered data
+cycloplegia_urban = list()
+cycloplegia_rural = list()
+nocycloplegia_urban = list()
+nocycloplegia_rural = list()
+adjusted_urban = list()
+adjusted_rural = list()
+
+for(g in 1:4){
+    cycloplegia_urban[[g]] = read.csv(paste0("cycloplegia_forecast_urban_group", g, ".csv"), header = TRUE)
+    cycloplegia_rural[[g]] = read.csv(paste0("cycloplegia_forecast_rural_group", g, ".csv"), header = TRUE)
+    nocycloplegia_urban[[g]] = read.csv(paste0("nocycloplegia_forecast_urban_group", g, ".csv"), header = TRUE)
+    nocycloplegia_rural[[g]] = read.csv(paste0("nocycloplegia_forecast_rural_group", g, ".csv"), header = TRUE)
+
+    adjusted_urban[[g]] = read.csv("forc_urban_with_interval_4groups.csv", header = TRUE)[,c(1, (2 +  (g - 1) * 3):(4 +  (g - 1) * 3))]
+
+    colnames(adjusted_urban[[g]]) = c("year_all", "lower", "mean", "upper")
+
+    adjusted_rural[[g]] = read.csv("forc_rural_with_interval_4groups.csv", header = TRUE)[,c(1, (2 +  (g - 1) * 3):(4 +  (g - 1) * 3))]
+
+    colnames(adjusted_rural[[g]]) = c("year_all", "lower", "mean", "upper")
+
+}
+
+
 ## Estimate the urban mean difference over time
 diff_group = data.frame(year = 1998:2023)
 for(g in 1:4){
@@ -389,33 +412,56 @@ colnames(diff_group) = c("year", "g1", "g2", "g3", "g4")
 write.table(diff_group, file = "meandiff_cycloplegia_rural_4groups.csv", row.names = FALSE, sep = ",")
 
 
+## Estimate the urban mean sum over time
+diff_group = data.frame(year = 1998:2023)
+for(g in 1:4){
+    data_cy = cycloplegia_urban[[g]]
+    data_nocy = nocycloplegia_urban[[g]]
+
+    df = full_join(data_cy,data_nocy,by = "year_all")
+
+    df[, "meansum"] = df$mean.x + df$mean.y
+
+    diff = arrange(df, year_all) %>% na.omit
+
+    idx = 1:(nrow(diff)-27)
+    smg = diff[idx, ] # only select data before 2023
+
+    lmdata = data.frame(x = cbind(smg$year_all),
+                        data = smg$meansum)
+    reg = lm(data ~ x, data = lmdata)
+    diff_group[, g + 1] = predict(reg, newdata = data.frame(x = 1998:2023))
+}
+colnames(diff_group) = c("year", "g1", "g2", "g3", "g4")
+write.table(diff_group, file = "meansum_cycloplegia_urban_4groups.csv", row.names = FALSE, sep = ",")
+
+
+## Estimate the rural mean sum over time
+diff_group = data.frame(year = 1998:2023)
+for(g in 1:4){
+    data_cy = cycloplegia_rural[[g]]
+    data_nocy = nocycloplegia_rural[[g]]
+
+    df = full_join(data_cy,data_nocy,by = "year_all")
+
+    df[, "meansum"] = df$mean.x + df$mean.y
+
+    diff = arrange(df, year_all) %>% na.omit
+
+    idx = 1:(nrow(diff)-27)
+    smg = diff[idx, ] # only select data before 2023
+
+    lmdata = data.frame(x = cbind(smg$year_all),
+                        data = smg$meansum)
+    reg = lm(data ~ x, data = lmdata)
+    diff_group[, g + 1] = predict(reg, newdata = data.frame(x = 1998:2023))
+}
+colnames(diff_group) = c("year", "g1", "g2", "g3", "g4")
+write.table(diff_group, file = "meansum_cycloplegia_rural_4groups.csv", row.names = FALSE, sep = ",")
+
+
 ######################################################################
 ## Compare difference between cycloplegia and noncycloplegia effects.
-
-## Load the filtered data
-cycloplegia_urban = list()
-cycloplegia_rural = list()
-nocycloplegia_urban = list()
-nocycloplegia_rural = list()
-adjusted_urban = list()
-adjusted_rural = list()
-
-for(g in 1:4){
-    cycloplegia_urban[[g]] = read.csv(paste0("cycloplegia_forecast_urban_group", g, ".csv"), header = TRUE)
-    cycloplegia_rural[[g]] = read.csv(paste0("cycloplegia_forecast_rural_group", g, ".csv"), header = TRUE)
-    nocycloplegia_urban[[g]] = read.csv(paste0("nocycloplegia_forecast_urban_group", g, ".csv"), header = TRUE)
-    nocycloplegia_rural[[g]] = read.csv(paste0("nocycloplegia_forecast_rural_group", g, ".csv"), header = TRUE)
-
-    adjusted_urban[[g]] = read.csv("forc_urban_with_interval_4groups.csv", header = TRUE)[,c(1, (2 +  (g - 1) * 3):(4 +  (g - 1) * 3))]
-
-    colnames(adjusted_urban[[g]]) = c("year_all", "lower", "mean", "upper")
-
-    adjusted_rural[[g]] = read.csv("forc_rural_with_interval_4groups.csv", header = TRUE)[,c(1, (2 +  (g - 1) * 3):(4 +  (g - 1) * 3))]
-
-    colnames(adjusted_rural[[g]]) = c("year_all", "lower", "mean", "upper")
-
-}
-
 
 ## Plot
 ## Urban difference
@@ -446,7 +492,6 @@ for(name in c("cycloplegia_urban", "nocycloplegia_urban", "adjusted_urban")){
     }
 }
 
-
 ## Rural difference
 lty = c("dotted", "dashed", "solid")
 d = 0
@@ -469,6 +514,54 @@ for(name in c("cycloplegia_rural", "nocycloplegia_rural", "adjusted_rural")){
         {
             points(year, myopia, xlim = c(1998, 2023), ylim = c(0, 1),
                    type = "l", col = g, lty = lty[d], lwd = 4)
+        }
+    }
+}
+
+
+## Plot Adjusted only
+par(mfrow = c(1, 2))
+for(name in "adjusted_urban"){
+    for(g in 1:4){
+        data = get(name)[[g]]
+        idx = 1:(nrow(data)-27)
+        smg = data[idx, ] # only select data before 2023
+
+        year = smg[, 'year_all']
+        myopia = smg[, 'mean']
+
+        if(g == 1 ){
+            plot(year, myopia, xlim = c(1998, 2023), ylim = c(0, 1),
+                 type = "l", col = g, lty = "solid", lwd = 4,
+                 main = "Adjusted (solid) difference for 4 groups",
+                 ylab = "Myopia (Urban)")
+        } else
+        {
+            points(year, myopia, xlim = c(1998, 2023), ylim = c(0, 1),
+                   type = "l", col = g, lty = "solid", lwd = 4)
+        }
+    }
+}
+
+## Rural difference
+for(name in "adjusted_rural"){
+    for(g in 1:4){
+        data = get(name)[[g]]
+        idx = 1:(nrow(data)-27)
+        smg = data[idx, ] # only select data before 2023
+
+        year = smg[, 'year_all']
+        myopia = smg[, 'mean']
+
+        if(g == 1){
+            plot(year, myopia, xlim = c(1998, 2023), ylim = c(0, 1),
+                 type = "l", col = g, lty = "solid", lwd = 4,
+                 main = "Adjusted (solid) difference for 4 groups",
+                 ylab = "Myopia (Rural)")
+        } else
+        {
+            points(year, myopia, xlim = c(1998, 2023), ylim = c(0, 1),
+                   type = "l", col = g, lty = "solid", lwd = 4)
         }
     }
 }
