@@ -1,5 +1,5 @@
 rm(list = ls())
-data_ts = read.csv("rates_estimation/rate_country_age_urban_rural_all.csv",
+data_ts = read.csv("../rates_estimation/rate_country_age_urban_rural_all.csv",
                    header = TRUE)
 
 ## select year range
@@ -26,13 +26,13 @@ year_forec = 2023:2050
 ## data = data_urban
 ## lambda = 0.1
 ## sd_inflation_factor = 0.02 # Urban, Overall
-## outfile = "forc_urban_with_interval_4groups.csv"
+## outfile = "../forc_urban_with_interval_4groups.csv"
 
 ## Rural forecasting
 data = data_rural
 lambda = 0.05
 sd_inflation_factor = 0.03 # Rural
-outfile = "forc_rural_with_interval_4groups.csv"
+outfile = "../forc_rural_with_interval_4groups.csv"
 
 ## Overall forecasting
 ## data = data_overall

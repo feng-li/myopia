@@ -3,7 +3,7 @@ library("fields")
 ## RATE COUNTRY
 rm(list = ls())
 
-file = "rates/rate_country.csv"
+file = "../rates/rate_country.csv"
 data_ts = read.csv(file, header = TRUE)
 
 year = data_ts[,'year']
@@ -23,7 +23,7 @@ points(year, upper, type="l", col = "red")
 points(year, lower, type="l", col = "red")
 
 out = data.frame(cbind(year, rate, fitted, upper, lower))
-write.csv(out, file = "rate_country_with_95CI.csv")
+write.csv(out, file = "../rate_country_with_95CI.csv")
 
 ## Forecast
 library("forecast")
@@ -60,14 +60,14 @@ points(year1, mean1, type="l", col = "blue")
 # plot(year, rate)
 
 out1 = data.frame(cbind(year1, mean1, upper, lower))
-write.csv(out1, file = "rate_country_forec_with_95CI.csv")
+write.csv(out1, file = "../rate_country_forec_with_95CI.csv")
 
 
 
 ## RATE COUNTRY URBAN and RURAL
 rm(list = ls())
 
-file = "rates/rate_country_urban_and_rural.csv"
+file = "../rates_estimation/rate_country_urban_and_rural.csv"
 data_ts = read.csv(file, header = TRUE)
 
 year = data_ts[,'year']
@@ -105,13 +105,13 @@ points(year, upper_rural, type="l", col = "red")
 points(year, lower_rural, type="l", col = "red")
 
 out = data.frame(cbind(year, rate_urban, fitted_urban, upper_urban, lower_urban, rate_rural, fitted_rural, upper_rural, lower_rural))
-write.csv(out, file = "rate_country_urban_and_rural_with_95CI.csv")
+write.csv(out, file = "../rate_country_urban_and_rural_with_95CI.csv")
 
 
 ## RATE HDI
 rm(list = ls())
 
-file = "rates/rate_hdi.csv"
+file = "../rates_estimation/rate_hdi.csv"
 data_ts = read.csv(file, header = TRUE)
 
 ##-- High HDI
@@ -172,4 +172,4 @@ points(year, upper_l, type="l", col = "red")
 points(year, lower_l, type="l", col = "red")
 
 out = data.frame(cbind(year, rate_h, fitted_h, upper_h, lower_h, rate_m, fitted_m, upper_m, lower_m, rate_l, fitted_l, upper_l, lower_l))
-write.csv(out, file = "rate_hdi_with_95CI.csv")
+write.csv(out, file = "../rate_hdi_with_95CI.csv")

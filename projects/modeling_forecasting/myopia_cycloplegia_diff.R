@@ -2,7 +2,7 @@ library("dplyr")
 library("fields")
 library("forecast")
 
-myopia = read.csv("data_processing/filtered_data_cycloplegia.csv", header = TRUE)
+myopia = read.csv("../data_processing/filtered_data_cycloplegia.csv", header = TRUE)
 
 ## URBAN CYCLOPLEGIA
 par(mfrow = c(2, 2))
@@ -165,7 +165,7 @@ dev.copy2pdf(file = "cycloplegia_forecast_rural_4groups.pdf")
 
 ## URBAN NO CYCLOPLEGIA
 rm(list = ls())
-myopia = read.csv("data_processing/filtered_data_nocycloplegia.csv", header = TRUE)
+myopia = read.csv("../data_processing/filtered_data_nocycloplegia.csv", header = TRUE)
 
 
 par(mfrow = c(2, 2))
@@ -251,7 +251,7 @@ dev.copy2pdf(file = "nocycloplegia_forecast_urban_4groups.pdf")
 
 ## RURAL NO CYCLOPLEGIA
 rm(list = ls())
-myopia = read.csv("data_processing/filtered_data_nocycloplegia.csv", header = TRUE)
+myopia = read.csv("../data_processing/filtered_data_nocycloplegia.csv", header = TRUE)
 
 par(mfrow = c(2, 2))
 lambda = c(0.1, 0.1, 0.5, 0.05)
@@ -348,16 +348,16 @@ adjusted_urban = list()
 adjusted_rural = list()
 
 for(g in 1:4){
-    cycloplegia_urban[[g]] = read.csv(paste0("cycloplegia_forecast_urban_group", g, ".csv"), header = TRUE)
-    cycloplegia_rural[[g]] = read.csv(paste0("cycloplegia_forecast_rural_group", g, ".csv"), header = TRUE)
-    nocycloplegia_urban[[g]] = read.csv(paste0("nocycloplegia_forecast_urban_group", g, ".csv"), header = TRUE)
-    nocycloplegia_rural[[g]] = read.csv(paste0("nocycloplegia_forecast_rural_group", g, ".csv"), header = TRUE)
+    cycloplegia_urban[[g]] = read.csv(paste0("../cycloplegia_forecast_urban_group", g, ".csv"), header = TRUE)
+    cycloplegia_rural[[g]] = read.csv(paste0("../cycloplegia_forecast_rural_group", g, ".csv"), header = TRUE)
+    nocycloplegia_urban[[g]] = read.csv(paste0("../nocycloplegia_forecast_urban_group", g, ".csv"), header = TRUE)
+    nocycloplegia_rural[[g]] = read.csv(paste0("../nocycloplegia_forecast_rural_group", g, ".csv"), header = TRUE)
 
     adjusted_urban[[g]] = read.csv("forc_urban_with_interval_4groups.csv", header = TRUE)[,c(1, (2 +  (g - 1) * 3):(4 +  (g - 1) * 3))]
 
     colnames(adjusted_urban[[g]]) = c("year_all", "lower", "mean", "upper")
 
-    adjusted_rural[[g]] = read.csv("forc_rural_with_interval_4groups.csv", header = TRUE)[,c(1, (2 +  (g - 1) * 3):(4 +  (g - 1) * 3))]
+    adjusted_rural[[g]] = read.csv("../forc_rural_with_interval_4groups.csv", header = TRUE)[,c(1, (2 +  (g - 1) * 3):(4 +  (g - 1) * 3))]
 
     colnames(adjusted_rural[[g]]) = c("year_all", "lower", "mean", "upper")
 
@@ -385,7 +385,7 @@ for(g in 1:4){
     diff_group[, g + 1] = predict(reg, newdata = data.frame(x = 1998:2023))
 }
 colnames(diff_group) = c("year", "g1", "g2", "g3", "g4")
-write.table(diff_group, file = "meandiff_cycloplegia_urban_4groups.csv", row.names = FALSE, sep = ",")
+write.table(diff_group, file = "../meandiff_cycloplegia_urban_4groups.csv", row.names = FALSE, sep = ",")
 
 
 ## Estimate the rural  mean difference over time
@@ -409,7 +409,7 @@ for(g in 1:4){
     diff_group[, g + 1] = predict(reg, newdata = data.frame(x = 1998:2023))
 }
 colnames(diff_group) = c("year", "g1", "g2", "g3", "g4")
-write.table(diff_group, file = "meandiff_cycloplegia_rural_4groups.csv", row.names = FALSE, sep = ",")
+write.table(diff_group, file = "../meandiff_cycloplegia_rural_4groups.csv", row.names = FALSE, sep = ",")
 
 
 ## Estimate the urban mean sum over time
@@ -433,7 +433,7 @@ for(g in 1:4){
     diff_group[, g + 1] = predict(reg, newdata = data.frame(x = 1998:2023))
 }
 colnames(diff_group) = c("year", "g1", "g2", "g3", "g4")
-write.table(diff_group, file = "meansum_cycloplegia_urban_4groups.csv", row.names = FALSE, sep = ",")
+write.table(diff_group, file = "../meansum_cycloplegia_urban_4groups.csv", row.names = FALSE, sep = ",")
 
 
 ## Estimate the rural mean sum over time
@@ -457,7 +457,7 @@ for(g in 1:4){
     diff_group[, g + 1] = predict(reg, newdata = data.frame(x = 1998:2023))
 }
 colnames(diff_group) = c("year", "g1", "g2", "g3", "g4")
-write.table(diff_group, file = "meansum_cycloplegia_rural_4groups.csv", row.names = FALSE, sep = ",")
+write.table(diff_group, file = "../meansum_cycloplegia_rural_4groups.csv", row.names = FALSE, sep = ",")
 
 
 ######################################################################
@@ -517,7 +517,7 @@ for(name in c("cycloplegia_rural", "nocycloplegia_rural", "adjusted_rural")){
         }
     }
 }
-
+dev.copy2pdf(file="adjusted_urban_rural_different_weights.pdf")
 
 ## Plot Adjusted only
 par(mfrow = c(1, 2))
@@ -565,3 +565,5 @@ for(name in "adjusted_rural"){
         }
     }
 }
+
+dev.copy2pdf(file="adjusted_urban_rural_different_weights_clean.pdf")

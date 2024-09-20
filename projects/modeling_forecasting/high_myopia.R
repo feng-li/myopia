@@ -1,7 +1,7 @@
-library(dplyr)
+library("dplyr")
 library("fields")
-high_myopia = read.csv("data/High_Myopia.csv", header = TRUE)
 
+high_myopia = read.csv("../data/High_Myopia.csv", header = TRUE)
 
 ## Calculate the raw rates
 high_myopia["rate_overall"] = high_myopia["高度近视人数"] / high_myopia["总人数"]
@@ -110,4 +110,4 @@ points(year, data)
 
 dev.copy2pdf(file = "high_myopia_forecast.pdf")
 
-write.table(out, file = "high_myopia_forecast.csv", row.names = FALSE, sep = ",")
+write.table(out, file = "../high_myopia_forecast.csv", row.names = FALSE, sep = ",")
