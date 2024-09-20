@@ -1,5 +1,5 @@
 rm(list = ls())
-data_ts = read.csv("rates/rate_country_age_urban_rural_all.csv",
+data_ts = read.csv("rates_estimation/rate_country_age_urban_rural_all.csv",
                    header = TRUE)
 
 ## select year range
