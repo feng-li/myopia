@@ -3,7 +3,7 @@ library("fields")
 ## RATE COUNTRY
 rm(list = ls())
 
-file = "../rates/rate_country.csv"
+file = "../rates_estimation/rate_country.csv"
 data_ts = read.csv(file, header = TRUE)
 
 year = data_ts[,'year']

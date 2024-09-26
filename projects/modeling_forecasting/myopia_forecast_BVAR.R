@@ -29,16 +29,16 @@ year_forec = 2023:2050
 ## outfile = "../forc_urban_with_interval_4groups.csv"
 
 ## Rural forecasting
-data = data_rural
-lambda = 0.05
-sd_inflation_factor = 0.03 # Rural
-outfile = "../forc_rural_with_interval_4groups.csv"
+## data = data_rural
+## lambda = 0.05
+## sd_inflation_factor = 0.03 # Rural
+## outfile = "../forc_rural_with_interval_4groups.csv"
 
 ## Overall forecasting
-## data = data_overall
-## lambda = 0.1
-## sd_inflation_factor = 0.02 # Urban, Overall
-## outfile = "forc_overall_with_interval_4groups.csv"
+data = data_overall
+lambda = 0.1
+sd_inflation_factor = 0.02 # Urban, Overall
+outfile = "../forc_overall_with_interval_4groups.csv"
 
 ######################################################################
 
