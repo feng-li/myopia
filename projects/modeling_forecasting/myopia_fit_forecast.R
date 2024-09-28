@@ -17,13 +17,13 @@ upper = fitted + 1.96 * sd(resid1)
 lower = fitted - 1.96 * sd(resid1)
 reg_sd = sd(resid1)
 
-plot(year, rate)
+plot(year, rate, ylim = c(0, 1))
 points(year, fitted, type="l", col = "blue")
 points(year, upper, type="l", col = "red")
 points(year, lower, type="l", col = "red")
 
 out = data.frame(cbind(year, rate, fitted, upper, lower))
-write.csv(out, file = "../rate_country_with_95CI.csv")
+write.csv(out, file = "../estimated_rate_country_with_95CI.csv", row.names = FALSE)
 
 ## Forecast
 library("forecast")
@@ -34,7 +34,6 @@ mean_g = fitted[length(fitted)]
 mean1 = fitted
 
 sd_inflation_factor = 0.015
-
 
 for (h in 0:27){
 
@@ -54,13 +53,13 @@ for (h in 0:27){
 }
 
 year1 = 1998:2050
-plot(year1, upper, type="l", col = "red")
+plot(year1, upper, type="l", col = "red", ylim = c(0, 1))
 points(year1, lower, type="l", col = "red")
 points(year1, mean1, type="l", col = "blue")
 # plot(year, rate)
 
 out1 = data.frame(cbind(year1, mean1, upper, lower))
-write.csv(out1, file = "../rate_country_forec_with_95CI.csv")
+write.csv(out1, file = "../forec_country_with_95CI.csv", row.names = FALSE)
 
 
 
@@ -83,7 +82,7 @@ upper_urban = fitted_urban + 1.96 * sd(resid1)
 lower_urban = fitted_urban - 1.96 * sd(resid1)
 
 
-plot(year, rate_urban, ylim = c(0.2, 0.8))
+plot(year, rate_urban, ylim = c(0, 1))
 points(year, fitted_urban, type="l", col = "blue")
 points(year, upper_urban, type="l", col = "red")
 points(year, lower_urban, type="l", col = "red")
@@ -99,13 +98,13 @@ upper_rural = fitted_rural + 1.96 * sd(resid2)
 lower_rural = fitted_rural - 1.96 * sd(resid2)
 
 
-plot(year, rate_rural, ylim = c(0.2, 0.8))
+plot(year, rate_rural, ylim = c(0, 1))
 points(year, fitted_rural, type="l", col = "blue")
 points(year, upper_rural, type="l", col = "red")
 points(year, lower_rural, type="l", col = "red")
 
 out = data.frame(cbind(year, rate_urban, fitted_urban, upper_urban, lower_urban, rate_rural, fitted_rural, upper_rural, lower_rural))
-write.csv(out, file = "../rate_country_urban_and_rural_with_95CI.csv")
+write.csv(out, file = "../estimated_rate_country_urban_and_rural_with_95CI.csv", row.names = FALSE)
 
 
 ## RATE HDI
@@ -172,4 +171,4 @@ points(year, upper_l, type="l", col = "red")
 points(year, lower_l, type="l", col = "red")
 
 out = data.frame(cbind(year, rate_h, fitted_h, upper_h, lower_h, rate_m, fitted_m, upper_m, lower_m, rate_l, fitted_l, upper_l, lower_l))
-write.csv(out, file = "../rate_hdi_with_95CI.csv")
+write.csv(out, file = "../estimated_rate_hdi_with_95CI.csv", row.names = FALSE)
