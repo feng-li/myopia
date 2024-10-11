@@ -406,15 +406,6 @@ for(g in 1:4){
     cycloplegia_rural[[g]] = read.csv(paste0("../cycloplegia_forecast_rural_group", g, ".csv"), header = TRUE)
     nocycloplegia_urban[[g]] = read.csv(paste0("../nocycloplegia_forecast_urban_group", g, ".csv"), header = TRUE)
     nocycloplegia_rural[[g]] = read.csv(paste0("../nocycloplegia_forecast_rural_group", g, ".csv"), header = TRUE)
-
-    adjusted_urban[[g]] = read.csv("../forc_urban_with_interval_4groups.csv", header = TRUE)[,c(1, (2 +  (g - 1) * 3):(4 +  (g - 1) * 3))]
-
-    colnames(adjusted_urban[[g]]) = c("year_all", "lower", "mean", "upper")
-
-    adjusted_rural[[g]] = read.csv("../forc_rural_with_interval_4groups.csv", header = TRUE)[,c(1, (2 +  (g - 1) * 3):(4 +  (g - 1) * 3))]
-
-    colnames(adjusted_rural[[g]]) = c("year_all", "lower", "mean", "upper")
-
 }
 
 
@@ -543,8 +534,22 @@ myopia_rural_adj['year'] = 1998:2023
 write.table(myopia_urban_adj, file = "../myopia_urban_adjust_singlecase_4groups.csv", row.names = FALSE, sep = ",")
 write.table(myopia_rural_adj, file = "../myopia_rural_adjust_singlecase_4groups.csv", row.names = FALSE, sep = ",")
 
+
+
+
+
+
 ######################################################################
 ## Compare difference between cycloplegia and noncycloplegia effects.
+for(g in 1:4){
+
+    adjusted_urban[[g]] = read.csv("../forc_urban_with_interval_4groups.csv", header = TRUE)[,c(1, (2 +  (g - 1) * 3):(4 +  (g - 1) * 3))]
+    colnames(adjusted_urban[[g]]) = c("year_all", "lower", "mean", "upper")
+
+    adjusted_rural[[g]] = read.csv("../forc_rural_with_interval_4groups.csv", header = TRUE)[,c(1, (2 +  (g - 1) * 3):(4 +  (g - 1) * 3))]
+    colnames(adjusted_rural[[g]]) = c("year_all", "lower", "mean", "upper")
+
+}
 
 ## Plot
 ## Urban difference
