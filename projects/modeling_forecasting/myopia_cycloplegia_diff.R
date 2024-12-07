@@ -11,7 +11,7 @@ g = 0
 
 
 cycloplegia_predict_urban_insample = data.frame(year = 1998:2023)
-
+cycloplegia_size_urban = c()
 for (col in c(4, 10, 16, 22)) # four groups
 {
     g = g + 1
@@ -45,6 +45,8 @@ for (col in c(4, 10, 16, 22)) # four groups
 
     reg12 = Tps(x, data, lambda = lambda[g])
     fitted_ = fitted(reg12)[,1]
+
+    cycloplegia_size_urban = c(cycloplegia_size_urban, length(data))
 
     # in sample prediction
     y1 = predict(reg12, x = x_new)
@@ -107,6 +109,7 @@ error_confidence_prior = c(0.64, 0.48, 0.4, 0.36)
 error_forc_confidence_prior = c(1, 0.9, 0.7, 0.6)
 
 cycloplegia_predict_rural_insample = data.frame(year = 1998:2023)
+cycloplegia_size_rural = c()
 
 g = 0
 for (col in c(7, 13, 19, 25)) # for groups
@@ -143,6 +146,8 @@ for (col in c(7, 13, 19, 25)) # for groups
     # x = cbind(year)
     reg12 = Tps(x, data, lambda = lambda[g])
     fitted_ = fitted(reg12)[,1]
+
+    cycloplegia_size_rural = c(cycloplegia_size_rural, length(data))
 
     # in sample prediction
     y1 = predict(reg12, x = x_new)
@@ -204,6 +209,7 @@ par(mfrow = c(2, 2))
 lambda = c(0.1, 0.1, 0.5, 0.05)
 error_confidence_prior = c(0.64, 0.36, 0.4, 0.36)
 error_forc_confidence_prior = c(1, 0.8, 1, 1)
+nocycloplegia_size_urban = c()
 
 g = 0
 for (col in c(4, 10, 16, 22)) # for groups
@@ -240,6 +246,8 @@ for (col in c(4, 10, 16, 22)) # for groups
     # x = cbind(year)
     reg12 = Tps(x, data, lambda = lambda[g])
     fitted_ = fitted(reg12)[,1]
+
+    nocycloplegia_size_urban = c(nocycloplegia_size_urban, length(data))
 
     # in sample prediction
     y1 = predict(reg12, x = x_new)
@@ -301,6 +309,7 @@ lambda = c(0.1, 0.1, 0.5, 0.05)
 error_confidence_prior = c(0.36, 0.36, 0.36, 0.36)
 error_forc_confidence_prior = c(0.7, 0.6, 0.45, 0.45)
 nocycloplegia_predict_rural_insample = data.frame(year = 1998:2023)
+nocycloplegia_size_rural = c()
 
 g = 0
 for (col in c(7, 13, 19, 25)) # for groups
@@ -337,6 +346,8 @@ for (col in c(7, 13, 19, 25)) # for groups
 
     reg12 = Tps(x, data, lambda = lambda[g])
     fitted_ = fitted(reg12)[,1]
+
+    nocycloplegia_size_rural = c(nocycloplegia_size_rural, length(data))
 
     # in sample prediction
     y1 = predict(reg12, x = x_new)

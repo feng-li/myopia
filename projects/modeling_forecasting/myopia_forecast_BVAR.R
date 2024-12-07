@@ -25,20 +25,23 @@ year_forec = 2023:2050
 # Urban forecasting
 ## data = data_urban
 ## lambda = 0.1
-## sd_inflation_factor = 0.02 # Urban, Overall
+## sd_inflation_factor = 0.02 # Urban, Overall, the factors are manually adjusted utilizing bootstrapping methods to empirically estimate the confidence interval
+## sd_shrink_factor = 1
 ## outfile = "../forc_urban_with_interval_4groups.csv"
 
 ## Rural forecasting
-## data = data_rural
-## lambda = 0.05
-## sd_inflation_factor = 0.03 # Rural
-## outfile = "../forc_rural_with_interval_4groups.csv"
+data = data_rural
+lambda = 0.05
+sd_inflation_factor = 0.005 # Rural
+sd_shrink_factor = 0.7 # Rural
+outfile = "../forc_rural_with_interval_4groups.csv"
 
 ## Overall forecasting
-data = data_overall
-lambda = 0.1
-sd_inflation_factor = 0.02 # Urban, Overall
-outfile = "../forc_overall_with_interval_4groups.csv"
+## data = data_overall
+## lambda = 0.1
+## sd_inflation_factor = 0.02 # Urban, Overall
+## sd_shrink_factor = 1
+## outfile = "../forc_overall_with_interval_4groups.csv"
 
 ######################################################################
 
@@ -136,10 +139,9 @@ forc_array_new = forc_array
 fitted_mat = NULL
 for(g in 1:4){
 
-    ## Fitted mean and CI
     f_mean = fitted_orig[1:nrow(data_urban), g]
-    f_upper = f_mean + 1.96 * reg_sd[g]
-    f_lower = f_mean - 1.96 * reg_sd[g]
+    f_upper = f_mean + 1.96 * reg_sd[g] * sd_shrink_factor
+    f_lower = f_mean - 1.96 * reg_sd[g] * sd_shrink_factor
 
     fitted_mat = cbind(fitted_mat, f_lower, f_mean, f_upper)
 
@@ -149,9 +151,8 @@ for(g in 1:4){
     upper_g = forc_array[, 3, g]
     reg_sd_g = reg_sd[g]
 
-
-    lower_g_new = mean_g - 1.96 * ((mean_g - lower_g) / 1.96 + reg_sd_g) * (1 + sd_inflation_factor * seq(1, length(year_forec)))
-    upper_g_new = mean_g + 1.96 * ((upper_g - mean_g) / 1.96 + reg_sd_g)* (1 + sd_inflation_factor * seq(1, length(year_forec)))
+    lower_g_new = mean_g - 1.96 * ((mean_g - lower_g) / 1.96 + reg_sd_g) * (1 + sd_inflation_factor * seq(1, length(year_forec))) * sd_shrink_factor
+    upper_g_new = mean_g + 1.96 * ((upper_g - mean_g) / 1.96 + reg_sd_g)* (1 + sd_inflation_factor * seq(1, length(year_forec))) * sd_shrink_factor
 
     forc_array_new[, 1, g] = lower_g_new
     forc_array_new[, 3, g] = upper_g_new
