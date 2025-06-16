@@ -1,6 +1,6 @@
 # Code for Myopia Projection in China
 
-_Myopia and High Myopia Trends in Chinese Children and Adolescents Over 25 Years: A Nationwide Study with Projections to 2050_
+Zhe Pan, Haocheng Xian, [Feng Li](https://feng.li), Ziyao Wang, Zihan Li, Yu Huang, Wenqing Liu, Yiman Li, Fan Li, Jinyuan Wang, Haichao Chen, Yilan Wu, Yueyuan Xu, Gangyue Wu, Yang Zhang, Lvfu He, Jianping Zhang, Fangxia Zhang, Xuehan Qian, Xiuhong Zhang, Lianhong Zhou, Yanqing Feng, Li Li, Xiangui He, Xun Xu, Jin Yang, Xiyuan Zhou, Dan Zhu, Chenwei Pan, Marcus Ang, Seang-Mei Saw, Yingfeng Zheng, Mingguang He, Jost B. Jonas, Neil M. Bressler, Ching-Yu Cheng, Yih-Chung Tham, Chun Zhang, Ya Xing Wang and Tien Yin Wong (2025). [“Myopia and High Myopia Trends in Chinese Children and Adolescents over 25 Years: A Nationwide Study with Projections to 2050”](https://doi.org/10.1016/j.lanwpc.2025.101577). **The Lancet Regional Health – Western Pacific**, Vol. 59 pp. 101577. 
 
 ## Background
 
@@ -36,3 +36,18 @@ regional disparities and prioritizing public health interventions.
 ## Funding
 
 National Natural Science Foundation of China (#82271086; #82388101; #72495123).
+
+
+## Citations
+
+```bibtex
+@article{PanZ2025MyopiaHigh,
+  author = {Pan, Zhe and Xian, Haocheng and Li, Feng and Wang, Ziyao and Li, Zihan and Huang, Yu and Liu, Wenqing and Li, Yiman and Li, Fan and Wang, Jinyuan and Chen, Haichao and Wu, Yilan and Xu, Yueyuan and Wu, Gangyue and Zhang, Yang and He, Lvfu and Zhang, Jianping and Zhang, Fangxia and Qian, Xuehan and Zhang, Xiuhong and Zhou, Lianhong and Feng, Yanqing and Li, Li and He, Xiangui and Xu, Xun and Yang, Jin and Zhou, Xiyuan and Zhu, Dan and Pan, Chenwei and Ang, Marcus and Saw, Seang-Mei and Zheng, Yingfeng and He, Mingguang and Jonas, Jost B. and Bressler, Neil M. and Cheng, Ching-Yu and Tham, Yih-Chung and Zhang, Chun and Wang, Ya Xing and Wong, Tien Yin},
+  title = {Myopia and High Myopia Trends in Chinese Children and Adolescents over 25 Years: A Nationwide Study with Projections to 2050},
+  journal = {The Lancet Regional Health - Western Pacific},
+  year = {2025},
+  volume = {59},
+  pages = {101577},
+  doi = {10.1016/j.lanwpc.2025.101577}
+}
+```
